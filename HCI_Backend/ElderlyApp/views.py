@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
+from django.core.serializers import serialize 
 from rest_framework.views import APIView
-from rest_framework import generics, permissions, authentication
-from ElderlyApp.serializers import UserSerializer, UserSettingsSerializer, UserContactsSerializer
+from rest_framework.response import Response
+from rest_framework import generics, permissions, authentication, status
+from ElderlyApp.serializers import UserSerializer, UserSettingsSerializer, UserContactsSerializer, UserDataSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from ElderlyApp.permissions import IsSelf
-from ElderlyApp.models import UserSetting, UserContact
+from ElderlyApp.models import UserSetting, UserContact, UserData
 
 # Create your views here.
 class AllUsersView(generics.ListAPIView):
@@ -19,23 +22,27 @@ class AllUserContactsView(generics.ListAPIView):
     serializer_class = UserContactsSerializer
     queryset = UserContact.objects.all()
 
-class UserView(generics.ListAPIView):
+class AllUserDataView(generics.ListAPIView):
+    serializer_class = UserDataSerializer
+    queryset = UserData.objects.all()
+
+class UserView(APIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    serializer_class = UserSerializer
+    def get(self, request, format=None):
+        data = User.objects.get(id = request.user.id);
+        serializer = UserSerializer(data, many=False)
+        return Response(serializer.data)
 
-    def get_queryset(self):
-        return User.objects.filter(username=self.request.user.username);
-
-class UserSettingsView(generics.ListAPIView):
+class UserSettingsView(APIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    serializer_class = UserSettingsSerializer
-
-    def get_queryset(self):
-        return UserSetting.objects.filter(user=self.request.user);
+    def get(self, request, format=None):
+        data = UserSetting.objects.get(user = request.user);
+        serializer = UserSettingsSerializer(data, many=False)
+        return Response(serializer.data)
 
 class UserContactsView(generics.ListAPIView):
     authentication_classes = [authentication.BasicAuthentication]
@@ -45,3 +52,18 @@ class UserContactsView(generics.ListAPIView):
 
     def get_queryset(self):
         return UserContact.objects.filter(user=self.request.user);
+
+class UserDataView(generics.ListAPIView):
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        data = UserData.objects.get(user = self.request.user);
+        serializer = UserDataSerializer(data, many=False)
+        return Response(serializer.data)
+
+class LogoutView(APIView):
+    def get(self, request, format=None):
+        logout(request);
+        return Response(status=status.HTTP_201_CREATED)
+

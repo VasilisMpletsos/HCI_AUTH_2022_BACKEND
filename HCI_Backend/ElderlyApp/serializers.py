@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from ElderlyApp.models import UserSetting, UserContact
+from ElderlyApp.models import UserSetting, UserContact, UserData
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 class UserSettingsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -16,6 +16,12 @@ class UserContactsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserContact
         fields = ['contact_name', 'county_code', 'cellphone_number', 'home_number']
+
+class UserDataSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = UserData
+        fields = ['telephone', 'civilian_id', 'home_address', 'informations', 'date_born']
+
 
 
 
