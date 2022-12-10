@@ -1,6 +1,7 @@
 from django.contrib import admin
-from ElderlyApp.models import UserSettings
+from ElderlyApp.models import UserSetting, UserContact
 
 # Register your models here.
-admin.site.register(UserSettings)
+admin.site.register(UserSetting)
+admin.site.register(UserContact)
 # Register your models here.
