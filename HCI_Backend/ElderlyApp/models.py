@@ -17,6 +17,7 @@ class UserData(models.Model):
 
     def __str__(self):
         return 'Data_' + self.user.username
+        
 class UserSetting(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_settings')
     text_size = models.IntegerField(default=15, validators=[MinValueValidator(1)])
